@@ -1,1 +1,5 @@
 /coverage
+/.vscode
+/*.o
+/*.exe
+/mytest
