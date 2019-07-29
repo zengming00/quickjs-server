@@ -26,7 +26,6 @@
 
 #include <stddef.h>
 
-#include "ccc.h"
 #include "libunicode.h"
 
 #define LRE_BOOL  int       /* for documentation purposes */

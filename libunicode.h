@@ -25,7 +25,6 @@
 #define LIBUNICODE_H
 
 #include <inttypes.h>
-#include "ccc.h"
 
 #define LRE_BOOL  int       /* for documentation purposes */
 
