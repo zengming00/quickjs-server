@@ -30,6 +30,10 @@ import * as os from "os";
 (function(g) {
     /* add a 'global' binding */
     g.global = std.global;
+
+    /* add 'os' and 'std' bindings */
+    g.os = os;
+    g.std = std;
     
     /* close global objects */
     var Object = g.Object;
@@ -570,6 +574,8 @@ import * as os from "os";
                     obj = get_context_object(line, pos - base.length);
                     if (obj === null || obj === void 0)
                         return obj;
+                    if (obj === g && obj[base] === void 0)
+                        return eval(base);
                     else
                         return obj[base];
                 }
