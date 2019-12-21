@@ -127,7 +127,9 @@ Go to interactive mode (it is not the default when files are provided on the com
 
 @item -m
 @item --module
-Load as ES6 module (default=autodetect).
+Load as ES6 module (default=autodetect). A module is autodetected if
+the filename extension is @code{.mjs} or if the first keyword of the
+source is @code{import}.
 
 @item --script
 Load as ES6 script (default=autodetect).
@@ -202,13 +204,8 @@ QuickJS archive.
 
 @section Test262 (ECMAScript Test Suite)
 
-A test262 runner is included in the QuickJS archive.
-
-For reference, the full test262 tests are provided in the archive
-@file{qjs-tests-yyyy-mm-dd.tar.xz}. You just need to untar it into the
-QuickJS source code directory.
-
-Alternatively, the test262 tests can be installed with:
+A test262 runner is included in the QuickJS archive. The test262 tests
+can be installed in the QuickJS source directory with:
 
 @example
 git clone https://github.com/tc39/test262.git test262
@@ -256,8 +253,8 @@ options of the test262 runner.
 @code{test262-harness}@footnote{@url{https://github.com/bterlson/test262-harness}}
 thru @code{eshost}. Unless you want to compare QuickJS with other
 engines under the same conditions, we do not recommend to run the
-tests this way as it is much slower (typically more than one hour
-instead of about 100 seconds).
+tests this way as it is much slower (typically half an hour instead of
+about 100 seconds).
 
 @chapter Specifications
 
@@ -402,6 +399,10 @@ Open a file (wrapper to the libc @code{fopen()}). Throws
 Open a process by creating a pipe (wrapper to the libc @code{popen()}). Throws 
 @code{std.Error} in case of I/O error.
 
+@item fdopen(fd, flags)
+Open a file from a file handle (wrapper to the libc
+@code{fdopen()}). Throws @code{std.Error} in case of I/O error.
+
 @item tmpfile()
 Open a temporary file. Throws @code{std.Error} in case of I/O error.
 
@@ -423,9 +424,6 @@ Wrappers to the libc file @code{stdin}, @code{stdout}, @code{stderr}.
 @item SEEK_CUR
 @item SEEK_END
 Constants for seek().
-
-@item global
-Reference to the global object.
 
 @item gc()
 Manually invoke the cycle removal algorithm. The cycle removal
@@ -493,8 +491,13 @@ position @code{position} (wrapper to the libc @code{fread}).
 Return the next line from the file, assuming UTF-8 encoding, excluding
 the trailing line feed.
 
+@item readAsString(max_size = undefined)
+Read @code{max_size} bytes from the file and return them as a string
+assuming UTF-8 encoding. If @code{max_size} is not present, the file
+is read up its end.
+
 @item getByte()
-Return the next byte from the file.
+Return the next byte from the file. Return -1 if the end of file is reached.
 
 @item putByte(c)
 Write one byte to the file.
@@ -641,6 +644,56 @@ the signal.
 @item SIGTERM
 POSIX signal numbers.
 
+@item kill(pid, sig)
+Send the signal @code{sig} to the process @code{pid}.
+
+@item exec(args[, options])
+Execute a process with the arguments @code{args}. @code{options} is an
+object containing optional parameters:
+
+  @table @code
+  @item block
+  Boolean (default = true). If true, wait until the process is
+  termined. In this case, @code{exec} return the exit code if positive
+  or the negated signal number if the process was interrupted by a
+  signal. If false, do not block and return the process id of the child.
+  
+  @item usePath
+  Boolean (default = true). If true, the file is searched in the
+  @code{PATH} environment variable.
+
+  @item file
+  String (default = @code{args[0]}). Set the file to be executed.
+
+  @item cwd
+  String. If present, set the working directory of the new process.
+
+  @item stdin
+  @item stdout
+  @item stderr
+  If present, set the handle in the child for stdin, stdout or stderr.
+ 
+  @end table
+
+@item waitpid(pid, options)
+@code{waitpid} Unix system call. Return the array @code{[ret, status]}.
+
+@item WNOHANG
+Constant for the @code{options} argument of @code{waitpid}.
+
+@item dup(fd)
+@code{dup} Unix system call.
+
+@item dup2(oldfd, newfd)
+@code{dup2} Unix system call.
+
+@item pipe()
+@code{pipe} Unix system call. Return two handles as @code{[read_fd,
+write_fd]} or null in case of error.
+
+@item sleep(delay_ms)
+Sleep during @code{delay_ms} milliseconds.
+
 @item setTimeout(func, delay)
 Call the function @code{func} after @code{delay} ms. Return a handle
 to the timer.
@@ -705,10 +758,11 @@ occured. The actual exception object is stored in the
 
 Use @code{JS_Eval()} to evaluate a script or module source.
 
-If the script or module was compiled to bytecode with @code{qjsc},
-@code{JS_EvalBinary()} achieves the same result. The advantage is that
-no compilation is needed so it is faster and smaller because the compiler
-can be removed from the executable if no @code{eval} is required.
+If the script or module was compiled to bytecode with @code{qjsc}, it
+can be evaluated by calling @code{js_std_eval_binary()}. The advantage
+is that no compilation is needed so it is faster and smaller because
+the compiler can be removed from the executable if no @code{eval} is
+required.
 
 Note: the bytecode format is linked to a given QuickJS
 version. Moreover, no security check is done before its
