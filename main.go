@@ -1,6 +1,8 @@
 package main
 
 /*
+#cgo CFLAGS: -D_GNU_SOURCE
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
