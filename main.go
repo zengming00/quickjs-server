@@ -1,29 +1,22 @@
 package main
 
 /*
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
-#include "quickjs.h"
-#include "libregexp.h"
-#include "libunicode.h"
-#include "cutils.h"
-#include "quickjs-libc.h"
 
 #include "func.h"
+#include "main.h"
+
+
 */
 import "C"
 
 import (
-	"fmt"
 	"io/ioutil"
 	"os"
 	"unsafe"
 )
-
-//export myPrint
-func myPrint(ctx *C.JSContext, thisVal C.JSValueConst, argc C.int, argv *C.JSValueConst) C.JSValue {
-	fmt.Println("go my println()")
-	return C.JS_UNDEFINED
-}
 
 func main() {
 

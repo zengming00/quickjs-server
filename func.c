@@ -1,6 +1,11 @@
 
 #include "func.h"
-#include "_cgo_export.h"
+#include "main.h"
+
+JSValue getJS_UNDEFINED()
+{
+    return JS_UNDEFINED;
+}
 
 void addMyPrint(JSContext *ctx)
 {
